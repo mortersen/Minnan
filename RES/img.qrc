@@ -1,0 +1,19 @@
+<RCC>
+  <qresource prefix="PIC">
+    <file>5b483c0e7f8f41a5bebc1f7d7cd5d87c.png</file>
+    <file>convert.png</file>
+    <file>refresh.png</file>
+    <file>search.png</file>
+    <file>home.png</file>
+    <file>标题-秦川-1.png</file>
+    <file>Quit.png</file>
+    <file>退出.png</file>
+    <file>5450270016495582741.gif</file>
+    <file>5450270016495582742.gif</file>
+    <file>5450270016495582744.gif</file>
+    <file>古籍.png</file>
+    <file>机构.png</file>
+    <file>现代研究.png</file>
+    <file>专家.png</file>
+  </qresource>
+</RCC>
