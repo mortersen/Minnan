@@ -1,5 +1,8 @@
 from PyQt5.QtWidgets import QWidget,QMainWindow
 from UI.UI_ExpertListWidget import Ui_ExpertList
+from UI.UI_InstitutionIndexWidget import Ui_InstitutionIndex
+from PyQt5.QtSql import QSqlQuery
+from CreateDBConnect import SingleDBConnect
 
 
 #专家学者页面
