@@ -6,7 +6,7 @@ from CreateDBConnect import SingleDBConnect
 
 
 #专家学者页面
-class ExpertListWidget(QWidget):
+class ExpertIndexWidget(QWidget):
 
     def __init__(self,mainWin=QMainWindow):
         super().__init__()

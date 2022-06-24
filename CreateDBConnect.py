@@ -15,7 +15,9 @@ class SingleDBConnect(object):
         try:
             self.DB = QSqlDatabase.addDatabase("QSQLITE")
             self.DB.setDatabaseName("DB/MNCSIRDB.db")
-            #print("Open DB success!")
+            #记得打开数据库哦
+            self.DB.open()
+            print("Open DB success!")
         except Exception as e:
             QMessageBox.critical(self, "错误", "数据库驱动错误")
             #print(e)
