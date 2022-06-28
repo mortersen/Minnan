@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>677</width>
-    <height>300</height>
+    <width>856</width>
+    <height>414</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -145,6 +145,19 @@
            </item>
           </widget>
          </item>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="font">
+            <font>
+             <family>Arial</family>
+             <pointsize>14</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>共有记录1000条</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -204,7 +217,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QTableWidget" name="tableWidget"/>
+      <widget class="QTableView" name="tableView"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_8">
