@@ -1,8 +1,5 @@
 import sys
 from PyQt5.QtWidgets import QApplication,QMainWindow,QTabWidget
-
-from ExpertWidget import ExpertIndexWidget
-
 from UI.UI_MainWin import Ui_MainWindow
 
 #主窗口
@@ -19,6 +16,7 @@ class MainWindow(QMainWindow):
         self.cenTab.tabCloseRequested.connect(self.on_cenTab_close)
         self.setCentralWidget(self.cenTab)
 
+        from ExpertWidget import ExpertIndexWidget
         self.cenTab.addTab(ExpertIndexWidget(self),"《学者专家库》")
         from InstitutionWidget import InstitutionIndexWidget
         self.cenTab.addTab(InstitutionIndexWidget(self),"《机 构 库》")
