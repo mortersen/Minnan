@@ -177,6 +177,17 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QLineEdit" name="queryforLineEdit">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+            </font>
+           </property>
            <property name="whatsThis">
             <string>输入查询内容</string>
            </property>
@@ -322,6 +333,11 @@
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <widget class="QLabel" name="label_7">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>前往第</string>
              </property>
@@ -331,23 +347,33 @@
             <widget class="QLineEdit" name="gotoPageLineEidit">
              <property name="minimumSize">
               <size>
-               <width>22</width>
-               <height>0</height>
+               <width>25</width>
+               <height>22</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
                <width>30</width>
-               <height>19</height>
+               <height>22</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
              <property name="text">
-              <string>100</string>
+              <string/>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_8">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>页</string>
              </property>

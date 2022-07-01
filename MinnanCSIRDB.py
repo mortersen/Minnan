@@ -16,7 +16,8 @@ class MainWindow(QMainWindow):
         self.cenTab.tabCloseRequested.connect(self.on_cenTab_close)
         self.setCentralWidget(self.cenTab)
 
-        from ExpertWidget import ExpertIndexWidget
+        from ExpertWidget import ExpertIndexWidget,ExpertInfoWidget
+        # self.cenTab.addTab(ExpertInfoWidget(),"测试")
         self.cenTab.addTab(ExpertIndexWidget(self),"《学者专家库》")
         from InstitutionWidget import InstitutionIndexWidget
         self.cenTab.addTab(InstitutionIndexWidget(self),"《机 构 库》")
