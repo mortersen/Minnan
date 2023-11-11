@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="PIC">
+    <file>最小化.png</file>
     <file>5b483c0e7f8f41a5bebc1f7d7cd5d87c.png</file>
     <file>convert.png</file>
     <file>refresh.png</file>

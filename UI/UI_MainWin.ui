@@ -36,6 +36,9 @@
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="allowedAreas">
+    <set>Qt::AllToolBarAreas</set>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -50,6 +53,7 @@
    <addaction name="action_modernDB"/>
    <addaction name="separator"/>
    <addaction name="action_close"/>
+   <addaction name="action_mini"/>
    <addaction name="action_quit"/>
   </widget>
   <action name="action_home">
@@ -134,6 +138,18 @@
    </property>
    <property name="toolTip">
     <string>打开专家学者库</string>
+   </property>
+  </action>
+  <action name="action_mini">
+   <property name="icon">
+    <iconset resource="../RES/img.qrc">
+     <normaloff>:/PIC/最小化.png</normaloff>:/PIC/最小化.png</iconset>
+   </property>
+   <property name="text">
+    <string>最小化</string>
+   </property>
+   <property name="toolTip">
+    <string>窗口最小化</string>
    </property>
   </action>
  </widget>

@@ -30,6 +30,7 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.toolBar = QtWidgets.QToolBar(MainWindow)
+        self.toolBar.setAllowedAreas(QtCore.Qt.AllToolBarAreas)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.action_home = QtWidgets.QAction(MainWindow)
@@ -67,6 +68,11 @@ class Ui_MainWindow(object):
         icon7.addPixmap(QtGui.QPixmap(":/PIC/专家.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_expertDB.setIcon(icon7)
         self.action_expertDB.setObjectName("action_expertDB")
+        self.action_mini = QtWidgets.QAction(MainWindow)
+        icon8 = QtGui.QIcon()
+        icon8.addPixmap(QtGui.QPixmap(":/PIC/最小化.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.action_mini.setIcon(icon8)
+        self.action_mini.setObjectName("action_mini")
         self.toolBar.addAction(self.action_home)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.action_expertDB)
@@ -75,6 +81,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.action_modernDB)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.action_close)
+        self.toolBar.addAction(self.action_mini)
         self.toolBar.addAction(self.action_quit)
 
         self.retranslateUi(MainWindow)
@@ -98,7 +105,10 @@ class Ui_MainWindow(object):
         self.action_institutionDB.setToolTip(_translate("MainWindow", "打开研究机构库"))
         self.action_expertDB.setText(_translate("MainWindow", "专家学者库"))
         self.action_expertDB.setToolTip(_translate("MainWindow", "打开专家学者库"))
+        self.action_mini.setText(_translate("MainWindow", "最小化"))
+        self.action_mini.setToolTip(_translate("MainWindow", "窗口最小化"))
 import RES.img_rc
+
 
 if __name__ == "__main__":
     import sys
