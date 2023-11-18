@@ -1,5 +1,14 @@
 <RCC>
   <qresource prefix="PIC">
+    <file>download.png</file>
+    <file>PageDown.png</file>
+    <file>PageUp.png</file>
+    <file>print.png</file>
+    <file>ZoomLarger.png</file>
+    <file>ZoomSmaller.png</file>
+    <file>goback.png</file>
+    <file>PDF下载.png</file>
+    <file>READPDF.png</file>
     <file>最小化.png</file>
     <file>5b483c0e7f8f41a5bebc1f7d7cd5d87c.png</file>
     <file>convert.png</file>

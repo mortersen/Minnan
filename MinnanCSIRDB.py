@@ -30,6 +30,8 @@ class MainWindow(QMainWindow):
         self.cenTab.addTab(ExpertIndexWidget(self),"《学者专家库》")
         from InstitutionWidget import InstitutionIndexWidget
         self.cenTab.addTab(InstitutionIndexWidget(self),"《机 构 库》")
+        from PapersWidget import PapersIndexWidget
+        self.cenTab.addTab(PapersIndexWidget(self),"重点报刊库")
 
 
     #槽函数，关闭当前标签页

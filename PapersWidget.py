@@ -1,28 +1,29 @@
-from PyQt5.QtWidgets import QWidget,QAbstractItemView,QMessageBox,QMenu,QAction
+from PyQt5.QtWidgets import QWidget,QAbstractItemView,QMessageBox,QMenu,QAction,QFileDialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont,QCursor
 from PyQt5.QtSql import QSqlQuery,QSqlQueryModel
-from UI.UI_InstitutionIndexWidget import Ui_InstitutionIndex
-from UI.UI_InstitutionInfoWidget import Ui_InstitutionInfoWidget
+from threading import Thread
+import os ,fitz
+from UI.UI_PapersIndexWidget import Ui_PapersIndex
+from UI.UI_PaperInfoWidget import Ui_PaperInfoView
 from MinnanCSIRDB import MainWindow
 from CreateDBConnect import SingleDBConnect
+from PDFWidget import WidgetPDFStream
 
 eachRecordPerPage =  10
-areaCode = {"地区":"","北京":"BJDQ","福建":"FJDQ","大陆其他地区":"DLQT","海外地区":"HWDQ","福州":"FZ","泉州":"QZ","泉州厦门":"QZXM","厦门":"XM","漳州":"ZZ","省内其他":"FJQT"}
 
-#机构库首页面
-class InstitutionIndexWidget(QWidget):
+class PapersIndexWidget(QWidget):
 
     def __init__(self,mainWin=MainWindow):
         super().__init__()
-        self.ui = Ui_InstitutionIndex()
+        self.ui = Ui_PapersIndex()
         self.ui.setupUi(self)
         self.mainWin = mainWin
 
         #设置地区结构树展开
-        self.ui.Institution_treeWidget.expandAll()
+        self.ui.Papers_treeWidget.expandAll()
        #隐藏第一列
-        # self.ui.Institution_treeWidget.hideColumn(1)
+        self.ui.Papers_treeWidget.hideColumn(1)
 
         # 应用数据库
         self.sqlQuery = QSqlQuery(SingleDBConnect().DB)
@@ -33,8 +34,8 @@ class InstitutionIndexWidget(QWidget):
         self.totoalPage = self.countPages()
 
         #设置表，匹配数据库
-        self.ui.InstitutiontableView.setModel(self.qryModel)
-        self.query = "SELECT Name,Type,AcademicPoint,AcademicJournals,ID from Institution  "
+        self.ui.PaperstableView.setModel(self.qryModel)
+        self.query = "SELECT Title,Author,PaperName,Summary,Class1,ID from Papers  "
 
         self.excuteQuery(self.currentPage*eachRecordPerPage)
         self.initTableView()
@@ -42,12 +43,12 @@ class InstitutionIndexWidget(QWidget):
         self.updateLabel()
 
         #设置表格允许右键自定义菜单
-        self.ui.InstitutiontableView.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.PaperstableView.setContextMenuPolicy(Qt.CustomContextMenu)
         #构建右键单击事件
-        self.ui.InstitutiontableView.customContextMenuRequested.connect(self.generateMenu)
+        self.ui.PaperstableView.customContextMenuRequested.connect(self.generateMenu)
 
         # 信号，切换地区
-        self.ui.Institution_treeWidget.clicked.connect(self.switchArea_callback)
+        self.ui.Papers_treeWidget.clicked.connect(self.switchArea_callback)
         #信号，查询
         self.ui.QueryBtn.clicked.connect(self.query_callback)
         #信号，回车查询
@@ -57,27 +58,30 @@ class InstitutionIndexWidget(QWidget):
         #信号，向上翻页
         self.ui.PageUpBtn.clicked.connect(self.pageUp_callback)
         #信号，双击打开详细页查看
-        self.ui.InstitutiontableView.doubleClicked.connect(self.openByDoubleClick_callback)
+        self.ui.PaperstableView.doubleClicked.connect(self.openByDoubleClick_callback)
 
 
     def initTableView(self):
-        self.ui.InstitutiontableView.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.ui.PaperstableView.setSelectionBehavior(QAbstractItemView.SelectRows)
         # self.tableView.setSelectionModel(QAbstractItemView.SingleSelection)
-        self.ui.InstitutiontableView.setAlternatingRowColors(True)
+        self.ui.PaperstableView.setAlternatingRowColors(True)
         #设置默认行高
-        self.ui.InstitutiontableView.verticalHeader().setDefaultSectionSize(60)
-        self.ui.InstitutiontableView.setColumnWidth(0, 400)
-        self.ui.InstitutiontableView.setColumnWidth(2, 600)
-        self.ui.InstitutiontableView.setColumnWidth(3, 400)
-        self.qryModel.setHeaderData(0, Qt.Horizontal, "机构名称")
-        self.qryModel.setHeaderData(1, Qt.Horizontal, "类型")
-        self.qryModel.setHeaderData(2, Qt.Horizontal, "学术指向")
-        self.qryModel.setHeaderData(3, Qt.Horizontal, "学术刊物")
-        self.ui.InstitutiontableView.setColumnHidden(4, True)
+        self.ui.PaperstableView.verticalHeader().setDefaultSectionSize(60)
+        self.ui.PaperstableView.setColumnWidth(0, 500)
+        #self.ui.PaperstableView.setColumnWidth(2, 400)
+        self.ui.PaperstableView.setColumnWidth(3, 500)
+        #self.ui.PaperstableView.setColumnWidth(4, 600)
+        self.qryModel.setHeaderData(0, Qt.Horizontal, "标题")
+        self.qryModel.setHeaderData(1, Qt.Horizontal, "作者")
+        self.qryModel.setHeaderData(2, Qt.Horizontal, "报刊名称")
+        self.qryModel.setHeaderData(3, Qt.Horizontal, "内容简介")
+        self.qryModel.setHeaderData(4, Qt.Horizontal, "分类")
+        self.ui.PaperstableView.setColumnHidden(5, True)
 
     #统计总记录数
     def countRecord(self,condition):
-        SqlTotoalQuery = "SELECT 1 from Institution" + condition
+        SqlTotoalQuery = "SELECT 1 from Papers" + condition
+        #print(SqlTotoalQuery)
         try:
             self.sqlQuery.exec(SqlTotoalQuery)
             self.sqlQuery.last()
@@ -103,7 +107,7 @@ class InstitutionIndexWidget(QWidget):
     def updateLabel(self):
         self.ui.CurrentPageLable.setText(str(self.currentPage+1))
         self.ui.TotoalPageLable.setText(str(self.totoalPage))
-        self.ui.InfoLable.setText("收录机构信息{0}家".format(str(self.totoalRecord)))
+        self.ui.InfoLable.setText("收录资料{0}条".format(str(self.totoalRecord)))
 
     #执行查询
     def excuteQuery(self,index):
@@ -113,13 +117,12 @@ class InstitutionIndexWidget(QWidget):
 
     #槽，相应树节点切换
     def switchArea_callback(self):
-        item = areaCode[self.ui.Institution_treeWidget.currentItem().text(0)]
-        if item == '':
+
+        item = self.ui.Papers_treeWidget.currentItem().text(0)
+        if item == '重要报刊资料':
             self.condition = ""
-        elif item in ['BJDQ','FJDQ','DLQT','HWDQ']:
-            self.condition = " WHERE AreaClass LIKE \'%%%s%%\' " % (item)
-        elif item in ['FZ','QZ','QZXM','XM','ZZ','FJQT']:
-            self.condition = " WHERE Area LIKE \'%%%s%%\' " % (item)
+        else:
+            self.condition = " WHERE Class1 LIKE \'%%%s%%\' " % (item)
         self.totoalRecord = self.countRecord(self.condition)
         self.totoalPage = self.countPages()
         self.currentPage = 0
@@ -152,7 +155,7 @@ class InstitutionIndexWidget(QWidget):
             self.condition = ""
             return
         else:
-            self.condition = " WHERE Name LIKE \'%%%s%%\' or AcademicPoint LIKE \'%%%s%%\' or Type LIKE \'%%%s%%\' or AcademicJournals LIKE \'%%%s%%\' or Summary LIKE \'%%%s%%\' or Remark LIKE \'%%%s%%\' or CompetentOrganization LIKE \'%%%s%%\' " % (target, target, target,target,target,target,target)
+            self.condition = " WHERE Title LIKE \'%%%s%%\' or Summary LIKE \'%%%s%%\' or Keyword LIKE \'%%%s%%\' or Author LIKE \'%%%s%%\' or AuthorUnit LIKE \'%%%s%%\' or PaperName LIKE \'%%%s%%\' or PubYear LIKE \'%%%s%%\' " % (target, target, target,target,target,target,target)
             records = self.countRecord(self.condition)
             #查询到记录
             if records > 0:
@@ -172,30 +175,27 @@ class InstitutionIndexWidget(QWidget):
         #print(curRec)
         ID = curRec.value("ID")
         #print(ID)
-        query =  "select * from Institution where ID=?"
+        query =  "select * from Papers where ID=?"
         self.sqlQuery.prepare(query)
         self.sqlQuery.bindValue(0,ID)
         self.sqlQuery.exec()
         self.sqlQuery.last()
-        infoInstitutionWidget = InstitutionInfoWidget()
-        name = self.sqlQuery.value("Name")
-        infoInstitutionWidget.setName(name)
-        infoInstitutionWidget.setLocation(self.sqlQuery.value("Location"))
-        infoInstitutionWidget.setType(self.sqlQuery.value("Type"))
-        infoInstitutionWidget.setSummary(self.sqlQuery.value("Summary"))
-        infoInstitutionWidget.setLeadingOfficial(self.sqlQuery.value("LeadingOfficial"))
-        infoInstitutionWidget.setLinkman(self.sqlQuery.value("Linkman"))
-        infoInstitutionWidget.setContact(self.sqlQuery.value("Contact"))
-        infoInstitutionWidget.setPostAddress(self.sqlQuery.value("PostalAddress"))
-        infoInstitutionWidget.setWebsite(self.sqlQuery.value("Website"))
-        infoInstitutionWidget.setFoundingTime(self.sqlQuery.value("FoundingTime"))
-        infoInstitutionWidget.setCompetentOrganization(self.sqlQuery.value("CompetentOrganization"))
-        infoInstitutionWidget.setProperty(self.sqlQuery.value("Property"))
-        infoInstitutionWidget.setAcademicPoint(self.sqlQuery.value("AcademicPoint"))
-        infoInstitutionWidget.setAcademicJournals(self.sqlQuery.value("AcademicJournals"))
-        infoInstitutionWidget.setRemark(self.sqlQuery.value("Remark"))
-        self.mainWin.cenTab.addTab(infoInstitutionWidget,name[0:11])
-        self.mainWin.cenTab.setCurrentWidget(infoInstitutionWidget)
+        title = self.sqlQuery.value("Title")
+        paperInfoWidget = PaperInfoWidget(self.mainWin, title,self.sqlQuery.value("MD5"))
+        paperInfoWidget.setTitle(title)
+        paperInfoWidget.setAuthor(self.sqlQuery.value("Author"))
+        paperInfoWidget.setAuthorUnit(self.sqlQuery.value("AuthorUnit"))
+        paperInfoWidget.setSummary(self.sqlQuery.value("Summary"))
+        paperInfoWidget.setKeyword(self.sqlQuery.value("Keyword"))
+        paperInfoWidget.setPaperName(self.sqlQuery.value("PaperName"))
+        paperInfoWidget.setVersionName(self.sqlQuery.value("VersionName"))
+        paperInfoWidget.setVersionNO(self.sqlQuery.value("VersionNO"))
+        paperInfoWidget.setPubYear(self.sqlQuery.value("PubYear"))
+        paperInfoWidget.setPubDate(self.sqlQuery.value("PubDate"))
+        paperInfoWidget.setClass(self.sqlQuery.value("Class1"))
+
+        self.mainWin.cenTab.addTab(paperInfoWidget,title[0:11])
+        self.mainWin.cenTab.setCurrentWidget(paperInfoWidget)
 
 
     #构建表格右键单击事件
@@ -219,7 +219,7 @@ class InstitutionIndexWidget(QWidget):
 
     #右键响应打开选中行的详细页
     def openContextMenu_callback(self):
-        for index in self.ui.InstitutiontableView.selectionModel().selectedRows():
+        for index in self.ui.PaperstableView.selectionModel().selectedRows():
             self.openByDoubleClick_callback(index)
 
     #右键响应回到第一页
@@ -243,66 +243,83 @@ class InstitutionIndexWidget(QWidget):
         self.excuteQuery(self.currentPage*eachRecordPerPage)
         self.updateLabel()
 
-#机构信息详细页面
-class InstitutionInfoWidget(QWidget):
 
-    def __init__(self):
+#重要报刊资料详细页
+class PaperInfoWidget(QWidget):
+
+    def __init__(self,mainWin=MainWindow,Title=str,MD5=str):
         super().__init__()
-        self.ui = Ui_InstitutionInfoWidget()
+        self.ui = Ui_PaperInfoView()
         self.ui.setupUi(self)
+        self.mainWin = mainWin
+        self.Title =Title
+        self.MD5 = MD5
+        #如果没有MD5值，代表没有PDF文件，设置不可读不可下载
+        if self.MD5 == "":
+            self.ui.btn_pdfRead.setText(False)
+            self.ui.btn_pdfDownload.setEnabled(False)
+        else:
+            self.query = QSqlQuery(SingleDBConnect().DB)
+
+
         font = QFont()
-        font.setPixelSize(28)
+        font.setPixelSize(32)
         font.setBold(True)
-        self.ui.NameLabel.setFont(font)
+        self.ui.label_Title.setFont(font)
 
-    def setName(self,value):
-        self.ui.NameLabel.setText(value)
+        #槽，阅读
+        self.ui.btn_pdfRead.clicked.connect(self.on_PDFReader)
 
-    def setType(self,value):
-        self.ui.TypeLabel.setText(value)
 
-    def setLocation(self,value):
-        self.ui.LocationLabel.setText(value)
+    def setTitle(self,value):
+        self.ui.label_Title.setText(value)
+
+    def setAuthor(self,value):
+        self.ui.label_Author.setText(value)
+
+    def setAuthorUnit(self,value):
+        self.ui.label_AuthorUnit.setText(value)
 
     def setSummary(self,value):
-        self.ui.SummarytextEdit.setText(value)
+        self.ui.label_Summary.setText(value)
 
-    def setAcademicPoint(self,value):
-        self.ui.AcademicPointtextEdit.setText(value)
+    def setKeyword(self,value):
+        self.ui.label_Keyword.setText(value)
 
-    def setAcademicJournals(self,value):
-        self.ui.AcademicJournalslineEdit.setText(value)
+    def setPaperName(self,value):
+        self.ui.label_PaperName.setText(value)
 
-    def setLeadingOfficial(self,value):
-        self.ui.LeadingOfficiallineEdit.setText(value)
+    def setVersionName(self,value):
+        self.ui.label_VersionName.setText(value)
 
-    def setLinkman(self,value):
-        self.ui.LinkManlineEdit.setText(value)
+    def setVersionNO(self,value):
+        self.ui.label_VersionNO.setText(value)
 
-    def setContact(self,value):
-        self.ui.ContactlineEdit.setText(value)
+    def setPubYear(self,value):
+        self.ui.label_PubYear.setText(value)
 
-    def setPostAddress(self,value):
-        self.ui.PostalAddresslineEdit.setText(value)
+    def setPubDate(self,value):
+        self.ui.label_PubDate.setText(value)
 
-    def setWebsite(self,value):
-        self.ui.WebsitelineEdit.setText(value)
+    def setClass(self,value):
+        self.ui.label_FL.setText(value)
 
-    def setFoundingTime(self,value):
-        self.ui.FoundingTimelineEdit.setText(value)
+    #阅读PDF
+    def on_PDFReader(self,):
 
-    def setCompetentOrganization(self,value):
-        self.ui.CompetentOrganizationlineEdit.setText(value)
+        bin = self.getPDFStream(self.MD5)
+        if bin != None:
+            tab = WidgetPDFStream(bin,self.Title)
+            self.mainWin.cenTab.addTab(tab,"【阅】"+self.Title[0:12])
+            self.mainWin.cenTab.setCurrentWidget(tab)
+        else:
+            QMessageBox.information(self,"提示","找不到文档文件。")
 
-    def setProperty(self,value):
-        self.ui.PropertylineEdit.setText(value)
-
-    def setRemark(self,value):
-        self.ui.RemarktextEdit.setText(value)
-
-
-
-
-
-
-
+    #阅读辅助函数，负责查询，辅助返回PDF流，提供阅读PDF函数使用
+    def getPDFStream(self,md5):
+        sqQuery = "select FileBinary from PapersFile where md5=?"
+        self.query.prepare(sqQuery)
+        self.query.bindValue(0, self.MD5)
+        self.query.exec()
+        self.query.last()
+        return self.query.value("FileBinary")
