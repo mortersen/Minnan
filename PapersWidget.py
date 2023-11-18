@@ -254,12 +254,14 @@ class PaperInfoWidget(QWidget):
         self.mainWin = mainWin
         self.Title =Title
         self.MD5 = MD5
+
         #如果没有MD5值，代表没有PDF文件，设置不可读不可下载
         if self.MD5 == "":
-            self.ui.btn_pdfRead.setText(False)
+            self.ui.btn_pdfRead.setEnabled(False)
             self.ui.btn_pdfDownload.setEnabled(False)
         else:
             self.query = QSqlQuery(SingleDBConnect().DB)
+
 
 
         font = QFont()
