@@ -31,7 +31,9 @@ class MainWindow(QMainWindow):
         from InstitutionWidget import InstitutionIndexWidget
         self.cenTab.addTab(InstitutionIndexWidget(self),"《机 构 库》")
         from PapersWidget import PapersIndexWidget
-        self.cenTab.addTab(PapersIndexWidget(self),"重点报刊库")
+        self.cenTab.addTab(PapersIndexWidget(self),"《重要报刊库》")
+        from ThesisWidget import ThesisIndexWidget
+        self.cenTab.addTab(ThesisIndexWidget(self),"《学位论文库》")
 
 
     #槽函数，关闭当前标签页

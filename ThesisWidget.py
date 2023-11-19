@@ -4,26 +4,26 @@ from PyQt5.QtGui import QFont,QCursor
 from PyQt5.QtSql import QSqlQuery,QSqlQueryModel
 from threading import Thread
 import os
-from UI.UI_PapersIndexWidget import Ui_PapersIndex
-from UI.UI_PaperInfoWidget import Ui_PaperInfoView
+from UI.UI_ThesisIndexWidget import Ui_ThesisIndex
+from UI.UI_ThesisInfoWidget import Ui_ThesisInfoView
 from MinnanCSIRDB import MainWindow
 from CreateDBConnect import SingleDBConnect
 from PDFWidget import WidgetPDFStream
 
 eachRecordPerPage =  10
 
-class PapersIndexWidget(QWidget):
+class ThesisIndexWidget(QWidget):
 
     def __init__(self,mainWin=MainWindow):
         super().__init__()
-        self.ui = Ui_PapersIndex()
+        self.ui = Ui_ThesisIndex()
         self.ui.setupUi(self)
         self.mainWin = mainWin
 
         #设置地区结构树展开
-        self.ui.Papers_treeWidget.expandAll()
+        self.ui.Thesis_treeWidget.expandAll()
        #隐藏第一列
-        self.ui.Papers_treeWidget.hideColumn(1)
+        self.ui.Thesis_treeWidget.hideColumn(1)
 
         # 应用数据库
         self.sqlQuery = QSqlQuery(SingleDBConnect().DB)
@@ -34,8 +34,8 @@ class PapersIndexWidget(QWidget):
         self.totoalPage = self.countPages()
 
         #设置表，匹配数据库
-        self.ui.PaperstableView.setModel(self.qryModel)
-        self.query = "SELECT Title,Author,PaperName,Summary,Class1,ID from Papers  "
+        self.ui.ThesistableView.setModel(self.qryModel)
+        self.query = "SELECT Title,Author,Teacher,School,Summary,Keyword,Year,ID from Thesis  "
 
         self.excuteQuery(self.currentPage*eachRecordPerPage)
         self.initTableView()
@@ -43,12 +43,12 @@ class PapersIndexWidget(QWidget):
         self.updateLabel()
 
         #设置表格允许右键自定义菜单
-        self.ui.PaperstableView.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.ThesistableView.setContextMenuPolicy(Qt.CustomContextMenu)
         #构建右键单击事件
-        self.ui.PaperstableView.customContextMenuRequested.connect(self.generateMenu)
+        self.ui.ThesistableView.customContextMenuRequested.connect(self.generateMenu)
 
         # 信号，切换地区
-        self.ui.Papers_treeWidget.clicked.connect(self.switchArea_callback)
+        self.ui.Thesis_treeWidget.clicked.connect(self.switchArea_callback)
         #信号，查询
         self.ui.QueryBtn.clicked.connect(self.query_callback)
         #信号，回车查询
@@ -58,7 +58,7 @@ class PapersIndexWidget(QWidget):
         #信号，向上翻页
         self.ui.PageUpBtn.clicked.connect(self.pageUp_callback)
         #信号，双击打开详细页查看
-        self.ui.PaperstableView.doubleClicked.connect(self.openByDoubleClick_callback)
+        self.ui.ThesistableView.doubleClicked.connect(self.openByDoubleClick_callback)
         #信号，跳转页码,输入框回车信号
         self.ui.gotoPageLineEidit.returnPressed.connect(self.gotoPage)
         #信号，跳转页码，点击跳转按钮
@@ -66,25 +66,27 @@ class PapersIndexWidget(QWidget):
 
 
     def initTableView(self):
-        self.ui.PaperstableView.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.ui.ThesistableView.setSelectionBehavior(QAbstractItemView.SelectRows)
         # self.tableView.setSelectionModel(QAbstractItemView.SingleSelection)
-        self.ui.PaperstableView.setAlternatingRowColors(True)
+        self.ui.ThesistableView.setAlternatingRowColors(True)
         #设置默认行高
-        self.ui.PaperstableView.verticalHeader().setDefaultSectionSize(60)
-        self.ui.PaperstableView.setColumnWidth(0, 500)
+        self.ui.ThesistableView.verticalHeader().setDefaultSectionSize(60)
+        self.ui.ThesistableView.setColumnWidth(0, 500)
         #self.ui.PaperstableView.setColumnWidth(2, 400)
-        self.ui.PaperstableView.setColumnWidth(3, 500)
-        #self.ui.PaperstableView.setColumnWidth(4, 600)
+        self.ui.ThesistableView.setColumnWidth(4, 500)
+        self.ui.ThesistableView.setColumnWidth(5, 400)
         self.qryModel.setHeaderData(0, Qt.Horizontal, "标题")
         self.qryModel.setHeaderData(1, Qt.Horizontal, "作者")
-        self.qryModel.setHeaderData(2, Qt.Horizontal, "报刊名称")
-        self.qryModel.setHeaderData(3, Qt.Horizontal, "内容简介")
-        self.qryModel.setHeaderData(4, Qt.Horizontal, "分类")
-        self.ui.PaperstableView.setColumnHidden(5, True)
+        self.qryModel.setHeaderData(2, Qt.Horizontal, "指导老师")
+        self.qryModel.setHeaderData(3, Qt.Horizontal, "学校")
+        self.qryModel.setHeaderData(4, Qt.Horizontal, "摘要")
+        self.qryModel.setHeaderData(5, Qt.Horizontal, "关键字")
+        self.qryModel.setHeaderData(6, Qt.Horizontal, "年份")
+        self.ui.ThesistableView.setColumnHidden(7, True)
 
     #统计总记录数
     def countRecord(self,condition):
-        SqlTotoalQuery = "SELECT 1 from Papers" + condition
+        SqlTotoalQuery = "SELECT 1 from Thesis" + condition
         #print(SqlTotoalQuery)
         try:
             self.sqlQuery.exec(SqlTotoalQuery)
@@ -122,9 +124,11 @@ class PapersIndexWidget(QWidget):
     #槽，相应树节点切换
     def switchArea_callback(self):
 
-        item = self.ui.Papers_treeWidget.currentItem().text(0)
-        if item == '重要报刊资料':
+        item = self.ui.Thesis_treeWidget.currentItem().text(0)
+        if item == '学位论文':
             self.condition = ""
+        elif int(self.ui.Thesis_treeWidget.currentItem().text(1)) in range(10,19):
+            self.condition = " WHERE Class2 LIKE \'%%%s%%\' " % (item)
         else:
             self.condition = " WHERE Class1 LIKE \'%%%s%%\' " % (item)
         self.totoalRecord = self.countRecord(self.condition)
@@ -175,7 +179,7 @@ class PapersIndexWidget(QWidget):
             self.condition = ""
             return
         else:
-            self.condition = " WHERE Title LIKE \'%%%s%%\' or Summary LIKE \'%%%s%%\' or Keyword LIKE \'%%%s%%\' or Author LIKE \'%%%s%%\' or AuthorUnit LIKE \'%%%s%%\' or PaperName LIKE \'%%%s%%\' or PubYear LIKE \'%%%s%%\' " % (target, target, target,target,target,target,target)
+            self.condition = " WHERE Title LIKE \'%%%s%%\' or Summary LIKE \'%%%s%%\' or Keyword LIKE \'%%%s%%\' or Author LIKE \'%%%s%%\' or Teacher LIKE \'%%%s%%\' or School LIKE \'%%%s%%\' or Year LIKE \'%%%s%%\' " % (target, target, target,target,target,target,target)
             records = self.countRecord(self.condition)
             #查询到记录
             if records > 0:
@@ -195,27 +199,27 @@ class PapersIndexWidget(QWidget):
         #print(curRec)
         ID = curRec.value("ID")
         #print(ID)
-        query =  "select * from Papers where ID=?"
+        query =  "select * from Thesis where ID=?"
         self.sqlQuery.prepare(query)
         self.sqlQuery.bindValue(0,ID)
         self.sqlQuery.exec()
         self.sqlQuery.last()
         title = self.sqlQuery.value("Title")
-        paperInfoWidget = PaperInfoWidget(self.mainWin, title,self.sqlQuery.value("MD5"))
-        paperInfoWidget.setTitle(title)
-        paperInfoWidget.setAuthor(self.sqlQuery.value("Author"))
-        paperInfoWidget.setAuthorUnit(self.sqlQuery.value("AuthorUnit"))
-        paperInfoWidget.setSummary(self.sqlQuery.value("Summary"))
-        paperInfoWidget.setKeyword(self.sqlQuery.value("Keyword"))
-        paperInfoWidget.setPaperName(self.sqlQuery.value("PaperName"))
-        paperInfoWidget.setVersionName(self.sqlQuery.value("VersionName"))
-        paperInfoWidget.setVersionNO(self.sqlQuery.value("VersionNO"))
-        paperInfoWidget.setPubYear(self.sqlQuery.value("PubYear"))
-        paperInfoWidget.setPubDate(self.sqlQuery.value("PubDate"))
-        paperInfoWidget.setClass(self.sqlQuery.value("Class1"))
+        thesisInfoWidget = ThesisInfoWidget(self.mainWin, title,self.sqlQuery.value("MD5"))
+        thesisInfoWidget.setTitle(title)
+        thesisInfoWidget.setAuthor(self.sqlQuery.value("Author"))
+        thesisInfoWidget.setSchool(self.sqlQuery.value("School"))
+        thesisInfoWidget.setSummary(self.sqlQuery.value("Summary"))
+        thesisInfoWidget.setKeyword(self.sqlQuery.value("Keyword"))
+        thesisInfoWidget.setTeacher(self.sqlQuery.value("Teacher"))
+        thesisInfoWidget.setType(self.sqlQuery.value("Type"))
+        thesisInfoWidget.setPages(self.sqlQuery.value("Pages"))
+        thesisInfoWidget.setYear(self.sqlQuery.value("Year"))
+        thesisInfoWidget.setPeriod(self.sqlQuery.value("Period"))
+        thesisInfoWidget.setFL(self.sqlQuery.value("Class1")+ ' | ' + self.sqlQuery.value("Class2"))
 
-        self.mainWin.cenTab.addTab(paperInfoWidget,title[0:11])
-        self.mainWin.cenTab.setCurrentWidget(paperInfoWidget)
+        self.mainWin.cenTab.addTab(thesisInfoWidget,title[0:11])
+        self.mainWin.cenTab.setCurrentWidget(thesisInfoWidget)
 
 
     #构建表格右键单击事件
@@ -239,7 +243,7 @@ class PapersIndexWidget(QWidget):
 
     #右键响应打开选中行的详细页
     def openContextMenu_callback(self):
-        for index in self.ui.PaperstableView.selectionModel().selectedRows():
+        for index in self.ui.ThesistableView.selectionModel().selectedRows():
             self.openByDoubleClick_callback(index)
 
     #右键响应回到第一页
@@ -265,12 +269,12 @@ class PapersIndexWidget(QWidget):
 
 
 #重要报刊资料详细页
-class PaperInfoWidget(QWidget):
+class ThesisInfoWidget(QWidget):
     signal_SaveOver = pyqtSignal(str)
 
     def __init__(self,mainWin=MainWindow,Title=str,MD5=str):
         super().__init__()
-        self.ui = Ui_PaperInfoView()
+        self.ui = Ui_ThesisInfoView()
         self.ui.setupUi(self)
         self.mainWin = mainWin
         self.Title =Title
@@ -304,8 +308,8 @@ class PaperInfoWidget(QWidget):
     def setAuthor(self,value):
         self.ui.label_Author.setText(value)
 
-    def setAuthorUnit(self,value):
-        self.ui.label_AuthorUnit.setText(value)
+    def setSchool(self,value):
+        self.ui.label_School.setText(value)
 
     def setSummary(self,value):
         self.ui.label_Summary.setText(value)
@@ -313,23 +317,24 @@ class PaperInfoWidget(QWidget):
     def setKeyword(self,value):
         self.ui.label_Keyword.setText(value)
 
-    def setPaperName(self,value):
-        self.ui.label_PaperName.setText(value)
+    def setTeacher(self,value):
+        self.ui.label_Teacher.setText(value)
 
-    def setVersionName(self,value):
-        self.ui.label_VersionName.setText(value)
+    def setType(self,value):
+        self.ui.label_Type.setText(value)
 
-    def setVersionNO(self,value):
-        self.ui.label_VersionNO.setText(value)
+    def setYear(self,value):
+        self.ui.label_Year.setText(value)
 
-    def setPubYear(self,value):
-        self.ui.label_PubYear.setText(value)
+    def setPages(self,value):
+        self.ui.label_Pages.setText(value)
 
-    def setPubDate(self,value):
-        self.ui.label_PubDate.setText(value)
+    def setPeriod(self,value):
+        self.ui.label_Period.setText(value)
 
-    def setClass(self,value):
+    def setFL(self,value):
         self.ui.label_FL.setText(value)
+
 
     #阅读PDF
     def on_PDFReader(self,):
@@ -362,7 +367,7 @@ class PaperInfoWidget(QWidget):
         QMessageBox.information(self, "提示", title + "文件下载成功！")
     #阅读辅助函数，负责查询，辅助返回PDF流，提供阅读或下载PDF函数使用
     def getPDFStream(self,md5):
-        sqQuery = "select FileBinary from PapersFile where md5=?"
+        sqQuery = "select FileBinary from ThesisFile where md5=?"
         self.query.prepare(sqQuery)
         self.query.bindValue(0, self.MD5)
         self.query.exec()
