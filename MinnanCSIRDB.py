@@ -28,17 +28,20 @@ class MainWindow(QMainWindow):
         from ExpertWidget import ExpertIndexWidget,ExpertInfoWidget
         #self.cenTab.addTab(ExpertInfoWidget(),"测试")
         self.cenTab.addTab(ExpertIndexWidget(self),"《学者专家库》")
-        from InstitutionWidget import InstitutionIndexWidget
-        self.cenTab.addTab(InstitutionIndexWidget(self),"《机 构 库》")
-        from PapersWidget import PapersIndexWidget
-        self.cenTab.addTab(PapersIndexWidget(self),"《重要报刊库》")
-        from ThesisWidget import ThesisIndexWidget
-        self.cenTab.addTab(ThesisIndexWidget(self),"《学位论文库》")
-        from BookWidget import BookIndexWidget
-        self.cenTab.addTab(BookIndexWidget(self),"《图书库》")
+        # from InstitutionWidget import InstitutionIndexWidget
+        # self.cenTab.addTab(InstitutionIndexWidget(self),"《机 构 库》")
+        # from PapersWidget import PapersIndexWidget
+        # self.cenTab.addTab(PapersIndexWidget(self),"《重要报刊库》")
+        # from ThesisWidget import ThesisIndexWidget
+        # self.cenTab.addTab(ThesisIndexWidget(self),"《学位论文库》")
+        # from BookWidget import BookIndexWidget
+        # self.cenTab.addTab(BookIndexWidget(self),"《图书库》")
+        #
+        # from MeetThesisWidget import MeetThesisIndexWidget
+        # self.cenTab.addTab(MeetThesisIndexWidget(self), "《会议论文》")
 
-        from MeetThesisWidget import MeetThesisIndexWidget
-        self.cenTab.addTab(MeetThesisIndexWidget(self), "《会议论文》")
+        from PeriodicalWidget import PeriodicalIndexWidget
+        self.cenTab.addTab(PeriodicalIndexWidget(self),"《期刊》")
 
     #槽函数，关闭当前标签页
     def on_cenTab_close(self,index):
