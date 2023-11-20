@@ -43,6 +43,9 @@ class MainWindow(QMainWindow):
         from PeriodicalWidget import PeriodicalIndexWidget
         self.cenTab.addTab(PeriodicalIndexWidget(self),"《期刊》")
 
+        from HistoryWidget import HistoryIndexWidget
+        self.cenTab.addTab(HistoryIndexWidget(self),"历史文献库")
+
     #槽函数，关闭当前标签页
     def on_cenTab_close(self,index):
         self.cenTab.removeTab(index)

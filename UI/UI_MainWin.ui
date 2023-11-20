@@ -50,11 +50,17 @@
    <addaction name="action_expertDB"/>
    <addaction name="action_institutionDB"/>
    <addaction name="action_historyDB"/>
-   <addaction name="action_modernDB"/>
+   <addaction name="separator"/>
+   <addaction name="Action_meetDB"/>
+   <addaction name="action_PeriodicalDB"/>
+   <addaction name="action_BookDB"/>
+   <addaction name="action_ThesisDB"/>
+   <addaction name="action_Papers"/>
    <addaction name="separator"/>
    <addaction name="action_close"/>
    <addaction name="action_mini"/>
    <addaction name="action_quit"/>
+   <addaction name="separator"/>
   </widget>
   <action name="action_home">
    <property name="icon">
@@ -150,6 +156,66 @@
    </property>
    <property name="toolTip">
     <string>窗口最小化</string>
+   </property>
+  </action>
+  <action name="Action_meetDB">
+   <property name="icon">
+    <iconset resource="../RES/img.qrc">
+     <normaloff>:/PIC/会议.png</normaloff>:/PIC/会议.png</iconset>
+   </property>
+   <property name="text">
+    <string>会议论文库</string>
+   </property>
+   <property name="toolTip">
+    <string>打开会议论文库</string>
+   </property>
+  </action>
+  <action name="action_PeriodicalDB">
+   <property name="icon">
+    <iconset resource="../RES/img.qrc">
+     <normaloff>:/PIC/期刊.png</normaloff>:/PIC/期刊.png</iconset>
+   </property>
+   <property name="text">
+    <string>期刊库</string>
+   </property>
+   <property name="toolTip">
+    <string>打开期刊库</string>
+   </property>
+  </action>
+  <action name="action_BookDB">
+   <property name="icon">
+    <iconset resource="../RES/img.qrc">
+     <normaloff>:/PIC/图书.png</normaloff>:/PIC/图书.png</iconset>
+   </property>
+   <property name="text">
+    <string>图书库</string>
+   </property>
+   <property name="toolTip">
+    <string>打开图书库</string>
+   </property>
+  </action>
+  <action name="action_ThesisDB">
+   <property name="icon">
+    <iconset resource="../RES/img.qrc">
+     <normaloff>:/PIC/论文.png</normaloff>:/PIC/论文.png</iconset>
+   </property>
+   <property name="text">
+    <string>学位论文库</string>
+   </property>
+   <property name="toolTip">
+    <string>打开学位论文库</string>
+   </property>
+  </action>
+  <action name="action_Papers">
+   <property name="icon">
+    <iconset resource="../RES/img.qrc">
+     <normaloff>:/PIC/报纸.png</normaloff>:/PIC/报纸.png</iconset>
+   </property>
+   <property name="text">
+    <string>报刊资料库</string>
+   </property>
+   <property name="toolTip">
+    <string>打开报刊资料库</string>
    </property>
   </action>
  </widget>
