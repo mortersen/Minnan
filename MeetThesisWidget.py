@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget,QAbstractItemView,QMessageBox,QMenu,QAction,QFileDialog
 from PyQt5.QtCore import Qt,pyqtSignal
-from PyQt5.QtGui import QFont,QCursor
+from PyQt5.QtGui import QFont,QCursor,QIcon
 from PyQt5.QtSql import QSqlQuery,QSqlQueryModel
 from threading import Thread
 import os
@@ -128,7 +128,7 @@ class MeetThesisIndexWidget(QWidget):
             self.condition = ""
         else:
             code = int(self.ui.MeetThesis_treeWidget.currentItem().text(1))
-            print(code)
+            #print(code)
             if code in range(15,20):
                 self.condition = " WHERE Class1 LIKE \'闽南名人\' AND Class2 LIKE \'%%%s%%\' " % (item)
             else:
@@ -297,12 +297,13 @@ class MeetThesisInfoWidget(QWidget):
         font.setBold(True)
         self.ui.label_Title.setFont(font)
 
-        #槽，阅读
+        #槽，阅读，下载，返回列表
         self.ui.btn_pdfRead.clicked.connect(self.on_PDFReader)
         self.ui.btn_pdfDownload.clicked.connect(self.on_SavePDF)
 
         #槽，信号处理
         self.signal_SaveOver.connect(self.onSignalSaveOver)
+
 
 
     def setTitle(self,value):
@@ -344,7 +345,7 @@ class MeetThesisInfoWidget(QWidget):
         bin = self.getPDFStream(self.MD5)
         if bin != None:
             tab = WidgetPDFStream(bin,self.Title)
-            self.mainWin.cenTab.addTab(tab,"【阅】"+self.Title[0:12])
+            self.mainWin.cenTab.addTab(tab,QIcon(":/PIC/阅读.png"),self.Title[0:12])
             self.mainWin.cenTab.setCurrentWidget(tab)
         else:
             QMessageBox.information(self,"提示","找不到文档文件。")

@@ -1,6 +1,5 @@
 import sys,tempfile
 from threading import Thread
-from multiprocessing import Process
 from queue import Queue
 from PyQt5.QtWidgets import (QWidget,QApplication,QListView,QListWidget,QLabel,
                                 QVBoxLayout,QListWidgetItem,QFileDialog,QMessageBox
@@ -455,31 +454,6 @@ class WidgetPDFStream(WidgetPDF):
     def onSignalSaveOver(self,name):
         QMessageBox.information(self, "提示", name + "文件另存为成功！")
 
-
-class WidgetPDFStreamByMultiProcess(WidgetPDFStream):
-
-    #以多进程方式加载左侧树，并生成QImage队列
-    def onSignalOpenDocInitUI(self):
-        self.nPages = self.docDoc.pageCount#总页数
-        self.label_pages.setText("/" + str(self.nPages))
-        self.label_FileStatus.setText("载入中，请稍后...")
-        self.listWidget.clear()  # 刷新左侧树
-        def func1():
-            zoom = int(30)
-            rotate = int(0)
-            trans = fitz.Matrix(zoom / 100.0, zoom / 100.0).preRotate(rotate)
-
-            for i in range(0,self.nPages):
-                page = self.docDoc[i]  # 当前页
-                pix = page.getPixmap(matrix=trans, alpha=False)
-                fmt = QImage.Format_RGBA8888 if pix.alpha else QImage.Format_RGB888
-                qtimg = QImage(pix.samples, pix.width, pix.height, pix.stride, fmt)
-                self.imageQueue.put(PdfImage(i,qtimg))
-            self.signal_HaveImage.emit()
-
-        imageProcess = Process(target=func1,)
-        imageProcess.start()
-        #imageProcess.join()
 
 if __name__ == '__main__':
     mainAPP = QApplication(sys.argv)

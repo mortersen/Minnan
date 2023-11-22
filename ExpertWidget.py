@@ -132,9 +132,9 @@ class ExpertIndexWidget(QWidget):
     #槽，双击打开详细页
     def doubleClick_callback(self,index):
         curRec = self.qryModel.record(index.row())
-        print(curRec)
+        #print(curRec)
         ID = curRec.value("ID")
-        print(ID)
+        #print(ID)
         query = "select * from Expert where ID=?"
         self.sqlQuery.prepare(query)
         self.sqlQuery.bindValue(0, ID)
@@ -157,14 +157,14 @@ class ExpertIndexWidget(QWidget):
 
     #槽，选择研究方向
     def currentIndexChanged_callback(self,index):
-        print(ResearchAreaCode[index])
+        #print(ResearchAreaCode[index])
         if index == 0:
             self.condition = ''
         elif index >= 6 and index <= 9:
             self.condition = " WHERE Second LIKE \'%s\'" % (ResearchAreaCode[index])
         else:
             self.condition = ' WHERE First LIKE \'%s\'' % (ResearchAreaCode[index])
-        print(self.condition)
+        #print(self.condition)
         self.totoalRecord = self.countRecord(self.condition)
         self.totoalPage = self.countPage()
         self.currentPage = 0

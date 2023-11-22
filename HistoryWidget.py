@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget,QAbstractItemView,QMessageBox,QMenu,QAction,QFileDialog
 from PyQt5.QtCore import Qt,pyqtSignal
-from PyQt5.QtGui import QFont,QCursor
+from PyQt5.QtGui import QFont,QCursor,QIcon
 from PyQt5.QtSql import QSqlQuery,QSqlQueryModel
 from threading import Thread
 import os
@@ -356,7 +356,7 @@ class HistoryInfoWidget(QWidget):
         bin = self.getPDFStream(self.MD5)
         if bin != None:
             tab = WidgetPDFStream(bin,self.Title)
-            self.mainWin.cenTab.addTab(tab,"【阅】"+self.Title[0:12])
+            self.mainWin.cenTab.addTab(tab,QIcon(":/PIC/阅读.png"),self.Title[0:12])
             self.mainWin.cenTab.setCurrentWidget(tab)
         else:
             QMessageBox.information(self,"提示","找不到文档文件。")
@@ -365,7 +365,7 @@ class HistoryInfoWidget(QWidget):
     def on_SavePDF(self,):
         filePath, fname = os.path.split(os.path.abspath("./" + self.Title + ".pdf"))
         newfileName, ok = QFileDialog.getSaveFileName(self, "文件下载到", fname, "*.pdf")
-        print(newfileName)
+        #print(newfileName)
         if ok:
             def func():
                 with open(newfileName,'wb') as wbf:
