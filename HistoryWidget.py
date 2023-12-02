@@ -189,7 +189,7 @@ class HistoryIndexWidget(QWidget):
             self.condition = ""
             return
         else:
-            self.condition = " WHERE Title LIKE \'%%%s%%\' or Summary LIKE \'%%%s%%\' or Keyword LIKE \'%%%s%%\' or Author LIKE \'%%%s%%\' or Press LIKE \'%%%s%%\' or SeriesName LIKE \'%%%s%%\' or Category LIKE \'%%%s%%\' " % (target, target, target,target,target,target,target)
+            self.condition = " WHERE Title LIKE \'%%%s%%\' or Summary LIKE \'%%%s%%\' or Keyword LIKE \'%%%s%%\' or Author LIKE \'%%%s%%\' or Pree LIKE \'%%%s%%\' or SeriesName LIKE \'%%%s%%\' or Category LIKE \'%%%s%%\' " % (target, target, target,target,target,target,target)
             records = self.countRecord(self.condition)
             #查询到记录
             if records > 0:
